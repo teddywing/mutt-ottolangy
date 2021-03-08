@@ -4,7 +4,4 @@ version = "0.0.1"
 edition = "2018"
 
 [dependencies]
-# email-parser = "0.5.0"
 mailparse = "0.13.2"
-# email-format = "0.8.0"
-# email = "0.0.21"
