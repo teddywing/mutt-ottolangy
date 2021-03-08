@@ -1,8 +1,8 @@
 // use email_parser::email::Email;
-// use mailparse;
+use mailparse;
 // use email_format::Email;
 // use email_format::rfc5322::Parsable;
-use email::rfc5322::Rfc5322Parser;
+// use email::rfc5322::Rfc5322Parser;
 
 use std::io::{self, Read};
 
@@ -24,11 +24,28 @@ fn main() {
     // let email = mailparse::parse_mail(&email_input).unwrap();
     // let body = email.get_body().unwrap();
     // println!("{:?}", body);
+    let email = mailparse::parse_mail(&email_input).unwrap();
+    if email.subparts.is_empty() {
+        let body = email.get_body_raw().unwrap();
+        println!("{:?}", String::from_utf8(body).unwrap());
+    } else {
+        for part in email.subparts {
+            for header in part.get_headers() {
+                println!("{}: {}", header.get_key(), header.get_value());
+
+                if header.get_key() == "Content-Type"
+                    && header.get_value().starts_with("text/plain")
+                {
+                    print!("{}", part.get_body().unwrap());
+                }
+            }
+        }
+    }
 
     // email-format
     // let email = Email::parse(&email_input).unwrap().0;
     // print!("{:?}", email.get_body().unwrap());
 
     // email
-    let email = Rfc5322Parser::
+    // let email = Rfc5322Parser::
 }
