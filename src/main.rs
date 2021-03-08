@@ -1,4 +1,5 @@
 use mailparse;
+use whatlang;
 
 use std::error::Error;
 use std::io::{self, Read};
@@ -12,6 +13,9 @@ fn main() {
 
     let body = get_email_body(&email_input).unwrap();
     print!("{}", body);
+
+    let lang_info = whatlang::detect(&body).unwrap();
+    println!("{:?}", lang_info);
 }
 
 fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
