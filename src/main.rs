@@ -11,8 +11,8 @@ fn main() {
 
     let email = mailparse::parse_mail(&email_input).unwrap();
     if email.subparts.is_empty() {
-        let body = email.get_body_raw().unwrap();
-        println!("{:?}", String::from_utf8(body).unwrap());
+        let body = email.get_body().unwrap();
+        println!("{}", body);
     } else {
         for part in email.subparts {
             for header in part.get_headers() {
