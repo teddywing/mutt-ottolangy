@@ -1,0 +1,3 @@
+On reply, automatically detect the language of the body of the message being replied to, and set `$attribution` accordingly.
+
+Ottolangy, parody of chef Yotam Ottolenghi.
