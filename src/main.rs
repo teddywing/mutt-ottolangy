@@ -40,10 +40,10 @@ fn main() {
 }
 
 fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
-    let email = mailparse::parse_mail(&email).unwrap();
+    let email = mailparse::parse_mail(&email)?;
 
     if email.subparts.is_empty() {
-        let body = email.get_body().unwrap();
+        let body = email.get_body()?;
 
         return Ok(body);
     } else {
@@ -54,7 +54,7 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
                 if header.get_key() == "Content-Type"
                     && header.get_value().starts_with("text/plain")
                 {
-                    return Ok(part.get_body().unwrap());
+                    return Ok(part.get_body()?);
                 }
             }
         }
@@ -64,12 +64,12 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
 }
 
 fn write_attribution(config: &str) -> Result<(), Box<dyn Error>> {
-    let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME).unwrap();
+    let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME)?;
 
-    let muttrc_path = xdg_dirs.place_data_file(MUTTRC_FILENAME).unwrap();
+    let muttrc_path = xdg_dirs.place_data_file(MUTTRC_FILENAME)?;
 
-    let mut file = File::create(muttrc_path).unwrap();
-    file.write_all(config.as_bytes()).unwrap();
+    let mut file = File::create(muttrc_path)?;
+    file.write_all(config.as_bytes())?;
 
     Ok(())
 }
