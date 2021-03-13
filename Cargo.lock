@@ -85,6 +85,7 @@ version = "0.0.1"
 dependencies = [
  "mailparse",
  "whatlang",
+ "xdg",
 ]
 
 [[package]]
@@ -101,3 +102,9 @@ checksum = "783066160df650d0cc2629fa4f616ef4fcf00817803789e92ca09a55eba6ff05"
 dependencies = [
  "hashbrown",
 ]
+
+[[package]]
+name = "xdg"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d089681aa106a86fade1b0128fb5daf07d5867a509ab036d99988dec80429a57"

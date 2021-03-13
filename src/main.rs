@@ -1,8 +1,21 @@
 use mailparse;
-use whatlang;
+use whatlang::{self, Lang};
+use xdg;
 
 use std::error::Error;
-use std::io::{self, Read};
+use std::fs::File;
+use std::io::{self, Read, Write};
+
+
+const PROGRAM_NAME: &'static str = "ottolangy";
+const MUTTRC_FILENAME: &'static str = "attribution.muttrc";
+
+const ATTRIBUTION_FR: &'static str =
+    r#"set attribution = "Le %{%e %b. %Y à %H:%M %Z}, %f a écrit:"
+"#;
+const ATTRIBUTION_EN: &'static str =
+    r#"set attribution = "On %{%b %e, %Y, at %I:%M %p %Z}, %f wrote:"
+"#;
 
 
 fn main() {
@@ -16,6 +29,14 @@ fn main() {
 
     let lang_info = whatlang::detect(&body).unwrap();
     println!("{:?}", lang_info);
+
+    let attribution_config = if lang_info.lang() == Lang::Fra {
+        ATTRIBUTION_FR
+    } else {
+        ATTRIBUTION_EN
+    };
+
+    write_attribution(&attribution_config).unwrap();
 }
 
 fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
@@ -40,4 +61,15 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
     }
 
     Err("parse".into())
+}
+
+fn write_attribution(config: &str) -> Result<(), Box<dyn Error>> {
+    let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME).unwrap();
+
+    let muttrc_path = xdg_dirs.place_data_file(MUTTRC_FILENAME).unwrap();
+
+    let mut file = File::create(muttrc_path).unwrap();
+    file.write_all(config.as_bytes()).unwrap();
+
+    Ok(())
 }
