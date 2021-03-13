@@ -66,7 +66,7 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
         }
     }
 
-    Err("parse".into())
+    Err("unable to parse email body".into())
 }
 
 fn write_attribution(config: &str) -> Result<(), Box<dyn Error>> {
