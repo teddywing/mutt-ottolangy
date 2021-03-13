@@ -19,15 +19,23 @@ const ATTRIBUTION_EN: &'static str =
 
 
 fn main() {
+    match run() {
+        Ok(_) => (),
+        Err(e) => eprintln!("{}: error: {}", PROGRAM_NAME, e),
+    }
+}
+
+fn run() -> Result<(), Box<dyn Error>> {
     let mut email_input: Vec<u8> = Vec::new();
 
     let mut stdin = io::stdin();
-    stdin.read_to_end(&mut email_input).unwrap();
+    stdin.read_to_end(&mut email_input)?;
 
-    let body = get_email_body(&email_input).unwrap();
+    let body = get_email_body(&email_input)?;
     print!("{}", body);
 
-    let lang_info = whatlang::detect(&body).unwrap();
+    let lang_info = whatlang::detect(&body)
+        .ok_or("unable to detect language")?;
     println!("{:?}", lang_info);
 
     let attribution_config = if lang_info.lang() == Lang::Fra {
@@ -36,7 +44,9 @@ fn main() {
         ATTRIBUTION_EN
     };
 
-    write_attribution(&attribution_config).unwrap();
+    write_attribution(&attribution_config)?;
+
+    Ok(())
 }
 
 fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
