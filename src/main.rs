@@ -32,11 +32,9 @@ fn run() -> Result<(), Box<dyn Error>> {
     stdin.read_to_end(&mut email_input)?;
 
     let body = get_email_body(&email_input)?;
-    print!("{}", body);
 
     let lang_info = whatlang::detect(&body)
         .ok_or("unable to detect language")?;
-    println!("{:?}", lang_info);
 
     let attribution_config = if lang_info.lang() == Lang::Fra {
         ATTRIBUTION_FR
@@ -59,8 +57,6 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
     } else {
         for part in email.subparts {
             for header in part.get_headers() {
-                println!("{}: {}", header.get_key(), header.get_value());
-
                 if header.get_key() == "Content-Type"
                     && header.get_value().starts_with("text/plain")
                 {
