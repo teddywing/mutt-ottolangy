@@ -8,11 +8,16 @@ use std::io::{self, Read, Write};
 
 
 const PROGRAM_NAME: &'static str = "ottolangy";
+
+/// Filename used for the generated attribution config file.
 const MUTTRC_FILENAME: &'static str = "attribution.muttrc";
 
+/// French attribution config.
 const ATTRIBUTION_FR: &'static str =
     r#"set attribution = "Le %{%e %b. %Y à %H:%M %Z}, %f a écrit:"
 "#;
+
+/// English attribution config.
 const ATTRIBUTION_EN: &'static str =
     r#"set attribution = "On %{%b %e, %Y, at %I:%M %p %Z}, %f wrote:"
 "#;
@@ -25,6 +30,8 @@ fn main() {
     }
 }
 
+/// Get an email from standard input and write a Mutt attribution config based
+/// on the language.
 fn run() -> Result<(), Box<dyn Error>> {
     let mut email_input: Vec<u8> = Vec::new();
 
@@ -47,6 +54,10 @@ fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Extract the body from an email.
+///
+/// Given an email as input, parses it and extracts the body. For multipart
+/// emails, the body is extracted from the text part.
 fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
     let email = mailparse::parse_mail(&email)?;
 
@@ -69,6 +80,9 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
     Err("unable to parse email body".into())
 }
 
+/// Write the attribution config to a file.
+///
+/// Store the file in the XDG data directory.
 fn write_attribution(config: &str) -> Result<(), Box<dyn Error>> {
     let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME)?;
 
