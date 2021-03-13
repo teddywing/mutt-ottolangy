@@ -54,14 +54,14 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
         let body = email.get_body()?;
 
         return Ok(body);
-    } else {
-        for part in email.subparts {
-            for header in part.get_headers() {
-                if header.get_key() == "Content-Type"
-                    && header.get_value().starts_with("text/plain")
-                {
-                    return Ok(part.get_body()?);
-                }
+    }
+
+    for part in email.subparts {
+        for header in part.get_headers() {
+            if header.get_key() == "Content-Type"
+                && header.get_value().starts_with("text/plain")
+            {
+                return Ok(part.get_body()?);
             }
         }
     }
