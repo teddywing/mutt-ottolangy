@@ -1,8 +1,8 @@
+use anyhow::{anyhow, Context, Error};
 use mailparse;
 use whatlang::{self, Lang};
 use xdg;
 
-use std::error::Error;
 use std::fs::File;
 use std::io::{self, Read, Write};
 
@@ -32,16 +32,18 @@ fn main() {
 
 /// Get an email from standard input and write a Mutt attribution config based
 /// on the language.
-fn run() -> Result<(), Box<dyn Error>> {
+fn run() -> Result<(), Error> {
     let mut email_input: Vec<u8> = Vec::new();
 
     let mut stdin = io::stdin();
-    stdin.read_to_end(&mut email_input)?;
+    stdin.read_to_end(&mut email_input)
+        .context("failed to read from stdin")?;
 
-    let body = get_email_body(&email_input)?;
+    let body = get_email_body(&email_input)
+        .context("failed to parse email body")?;
 
     let lang_info = whatlang::detect(&body)
-        .ok_or("unable to detect language")?;
+        .ok_or(anyhow!("unable to detect language"))?;
 
     let attribution_config = if lang_info.lang() == Lang::Fra {
         ATTRIBUTION_FR
@@ -49,7 +51,8 @@ fn run() -> Result<(), Box<dyn Error>> {
         ATTRIBUTION_EN
     };
 
-    write_attribution(&attribution_config)?;
+    write_attribution(&attribution_config)
+        .context("failed to write attribution config file")?;
 
     Ok(())
 }
@@ -58,7 +61,7 @@ fn run() -> Result<(), Box<dyn Error>> {
 ///
 /// Given an email as input, parses it and extracts the body. For multipart
 /// emails, the body is extracted from the text part.
-fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
+fn get_email_body(email: &[u8]) -> Result<String, Error> {
     let email = mailparse::parse_mail(&email)?;
 
     if email.subparts.is_empty() {
@@ -77,13 +80,13 @@ fn get_email_body(email: &[u8]) -> Result<String, Box<dyn Error>> {
         }
     }
 
-    Err("unable to parse email body".into())
+    Err(anyhow!("unable to parse email body"))
 }
 
 /// Write the attribution config to a file.
 ///
 /// Store the file in the XDG data directory.
-fn write_attribution(config: &str) -> Result<(), Box<dyn Error>> {
+fn write_attribution(config: &str) -> Result<(), Error> {
     let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME)?;
 
     let muttrc_path = xdg_dirs.place_data_file(MUTTRC_FILENAME)?;

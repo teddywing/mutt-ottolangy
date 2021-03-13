@@ -4,6 +4,7 @@ version = "0.0.1"
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0.38"
 mailparse = "0.13.2"
 whatlang = "0.11.1"
 xdg = "2.2.0"
