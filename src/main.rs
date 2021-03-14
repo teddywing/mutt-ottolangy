@@ -148,26 +148,35 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     // TODO: If no plain text part, use html one
     // TODO: New predicate function for text/plain
     // TODO: Maybe split into functions
-    for part in email.subparts {
-        // if part.headers.get_app_values() is one of:
-        // "multipart/alternative"
-        // "text/plain"
 
-        println!("part ctype: {:?}", part.ctype);
+    extract_multipart_email_body(&email)
+}
 
+/// Get the body from a "multipart/alternative" or "multipart/relative" email.
+///
+/// Preferentially extract the body from the "text/plain" part. If none is
+/// present, try extracting it from the "text/html" part.
+fn extract_multipart_email_body(
+    email: &mailparse::ParsedMail,
+) -> Result<String, WrapError> {
+    for part in &email.subparts {
         if part.ctype.mimetype == "multipart/alternative" {
-            for alternative_part in &part.subparts {
-                println!("apart ctype: {:?}", alternative_part.ctype);
-
-                if alternative_part.ctype.mimetype == "text/plain" {
-                    return Ok(alternative_part.get_body()?);
-                }
-            }
+            return extract_multipart_email_body(&part);
         }
 
         if part.ctype.mimetype == "text/plain" {
             return Ok(part.get_body()?);
         }
+    }
+
+    for part in &email.subparts {
+        if email.ctype.mimetype == "text/html" {
+            let html_body = part.get_body()?;
+            let re = Regex::new("<[^>]*>").unwrap();
+
+            return Ok(re.replace_all(&html_body, "").into_owned());
+        }
+
     }
 
     Err(WrapError::ParseMailUnknown)
