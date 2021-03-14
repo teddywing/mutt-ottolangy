@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use anyhow::{anyhow, Context, Error};
 use exitcode;
 use mailparse;
 use thiserror;
@@ -42,7 +41,7 @@ const ATTRIBUTION_EN: &'static str =
 
 
 #[derive(thiserror::Error, Debug)]
-enum OttolangyError {
+enum WrapError {
     #[error("unable to parse email body: {0}")]
     ParseMail(#[from] mailparse::MailParseError),
 
@@ -56,22 +55,43 @@ enum OttolangyError {
     Io(#[from] std::io::Error),
 }
 
+#[derive(thiserror::Error, Debug)]
+enum OttolangyError {
+    #[error("failed to read from stdin: {0}")]
+    ReadStdin(#[from] std::io::Error),
 
-// TODO: exit codes
+    #[error("unable to detect language")]
+    DetectLanguage,
+
+    #[error("failed to write attribution config file")]
+    WriteConfig(WrapError),
+
+    #[error(transparent)]
+    Wrapped(WrapError),
+}
+
+
 fn main() {
     match run() {
         Ok(_) => (),
         Err(e) => {
             eprintln!("{}: error: {}", PROGRAM_NAME, e);
 
-            match e.downcast_ref::<OttolangyError>() {
-                Some(OttolangyError::ParseMail(_)) =>
+            match e {
+                OttolangyError::Wrapped(WrapError::ParseMail(_)) =>
                     process::exit(exitcode::DATAERR),
-                Some(OttolangyError::ParseMailUnknown) =>
+                OttolangyError::Wrapped(WrapError::ParseMailUnknown) =>
                     process::exit(exitcode::DATAERR),
-                Some(OttolangyError::Xdg(_)) => process::exit(exitcode::IOERR),
-                Some(OttolangyError::Io(_)) => process::exit(exitcode::IOERR),
-                None => process::exit(exitcode::UNAVAILABLE),
+                OttolangyError::Wrapped(WrapError::Xdg(_)) =>
+                    process::exit(exitcode::IOERR),
+                OttolangyError::Wrapped(WrapError::Io(_)) =>
+                    process::exit(exitcode::IOERR),
+                OttolangyError::ReadStdin(_) =>
+                    process::exit(exitcode::NOINPUT),
+                OttolangyError::DetectLanguage =>
+                    process::exit(exitcode::SOFTWARE),
+                OttolangyError::WriteConfig(_) =>
+                    process::exit(exitcode::IOERR),
             }
         },
     }
@@ -79,18 +99,18 @@ fn main() {
 
 /// Get an email from standard input and write a Mutt attribution config based
 /// on the language.
-fn run() -> Result<(), Error> {
+fn run() -> Result<(), OttolangyError> {
     let mut email_input: Vec<u8> = Vec::new();
 
     let mut stdin = io::stdin();
     stdin.read_to_end(&mut email_input)
-        .context("failed to read from stdin")?;
+        .map_err(|e| OttolangyError::ReadStdin(e))?;
 
     let body = get_email_body(&email_input)
-        .context("failed to parse email body")?;
+        .map_err(|e| OttolangyError::Wrapped(e))?;
 
     let lang_info = whatlang::detect(&body)
-        .ok_or(anyhow!("unable to detect language"))?;
+        .ok_or(OttolangyError::DetectLanguage)?;
 
     let attribution_config = if lang_info.lang() == Lang::Fra {
         ATTRIBUTION_FR
@@ -99,7 +119,7 @@ fn run() -> Result<(), Error> {
     };
 
     write_attribution(&attribution_config)
-        .context("failed to write attribution config file")?;
+        .map_err(|e| OttolangyError::WriteConfig(e))?;
 
     Ok(())
 }
@@ -108,7 +128,7 @@ fn run() -> Result<(), Error> {
 ///
 /// Given an email as input, parses it and extracts the body. For multipart
 /// emails, the body is extracted from the text part.
-fn get_email_body(email: &[u8]) -> Result<String, OttolangyError> {
+fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     let email = mailparse::parse_mail(&email)?;
 
     if email.subparts.is_empty() {
@@ -127,13 +147,13 @@ fn get_email_body(email: &[u8]) -> Result<String, OttolangyError> {
         }
     }
 
-    Err(OttolangyError::ParseMailUnknown)
+    Err(WrapError::ParseMailUnknown)
 }
 
 /// Write the attribution config to a file.
 ///
 /// Store the file in the XDG data directory.
-fn write_attribution(config: &str) -> Result<(), OttolangyError> {
+fn write_attribution(config: &str) -> Result<(), WrapError> {
     let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME)?;
 
     let muttrc_path = xdg_dirs.place_data_file(MUTTRC_FILENAME)?;
