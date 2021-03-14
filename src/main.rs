@@ -134,6 +134,9 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
         return Ok(body);
     }
 
+    // TODO: If no plain text part, use html one
+    // TODO: New predicate function for text/plain
+    // TODO: Maybe split into functions
     for part in email.subparts {
         for header in part.get_headers() {
             if header.get_key() == "Content-Type"
