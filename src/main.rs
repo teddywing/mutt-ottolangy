@@ -14,6 +14,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anyhow::{anyhow, Context, Error};
+use exitcode;
 use mailparse;
 use thiserror;
 use whatlang::{self, Lang};
@@ -21,6 +22,7 @@ use xdg;
 
 use std::fs::File;
 use std::io::{self, Read, Write};
+use std::process;
 
 
 const PROGRAM_NAME: &'static str = "ottolangy";
@@ -59,7 +61,19 @@ enum OttolangyError {
 fn main() {
     match run() {
         Ok(_) => (),
-        Err(e) => eprintln!("{}: error: {}", PROGRAM_NAME, e),
+        Err(e) => {
+            eprintln!("{}: error: {}", PROGRAM_NAME, e);
+
+            match e.downcast_ref::<OttolangyError>() {
+                Some(OttolangyError::ParseMail(_)) =>
+                    process::exit(exitcode::DATAERR),
+                Some(OttolangyError::ParseMailUnknown) =>
+                    process::exit(exitcode::DATAERR),
+                Some(OttolangyError::Xdg(_)) => process::exit(exitcode::IOERR),
+                Some(OttolangyError::Io(_)) => process::exit(exitcode::IOERR),
+                None => process::exit(exitcode::UNAVAILABLE),
+            }
+        },
     }
 }
 
