@@ -49,6 +49,9 @@ enum WrapError {
     #[error("unable to parse email body")]
     ParseMailUnknown,
 
+    #[error("regex error: {0}")]
+    Regex(#[from] regex::Error),
+
     #[error(transparent)]
     Xdg(#[from] xdg::BaseDirectoriesError),
 
@@ -82,6 +85,8 @@ fn main() {
                 OttolangyError::Wrapped(WrapError::ParseMail(_))
                 | OttolangyError::Wrapped(WrapError::ParseMailUnknown) =>
                     process::exit(exitcode::DATAERR),
+                OttolangyError::Wrapped(WrapError::Regex(_)) =>
+                    process::exit(exitcode::SOFTWARE),
                 OttolangyError::Wrapped(WrapError::Xdg(_))
                 | OttolangyError::Wrapped(WrapError::Io(_))
                 | OttolangyError::WriteConfig(_) =>
@@ -136,8 +141,7 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
         let mut body = email.get_body()?;
 
         if email.ctype.mimetype == "text/html" {
-            let re = Regex::new("<[^>]*>").unwrap();
-            body = re.replace_all(&body, "").into_owned();
+            body = unhtml(&body)?;
         }
 
         println!("body: {:?}", body);
@@ -171,15 +175,19 @@ fn extract_multipart_email_body(
 
     for part in &email.subparts {
         if email.ctype.mimetype == "text/html" {
-            let html_body = part.get_body()?;
-            let re = Regex::new("<[^>]*>").unwrap();
-
-            return Ok(re.replace_all(&html_body, "").into_owned());
+            return unhtml(&part.get_body()?);
         }
 
     }
 
     Err(WrapError::ParseMailUnknown)
+}
+
+/// Remove all HTML tags in `html`.
+fn unhtml(html: &str) -> Result<String, WrapError> {
+    let re = Regex::new("<[^>]*>")?;
+
+    Ok(re.replace_all(&html, "").into_owned())
 }
 
 /// Write the attribution config to a file.
