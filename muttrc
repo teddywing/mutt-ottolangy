@@ -17,7 +17,7 @@ macro index,pager g "\
 <group-reply>\
 <enter-command> set wait_key=\$my_wait_key_save<enter>"
 
-macro index,pager L "\
+macro pager L "\
 <enter-command> set my_wait_key_save=\$wait_key<enter>\
 <enter-command> unset wait_key<enter>\
 <pipe-message>ottolangy<enter>\
