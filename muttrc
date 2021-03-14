@@ -7,7 +7,8 @@ macro index,pager r "\
 <pipe-message>ottolangy<enter>\
 <enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
 <reply>\
-<enter-command> set wait_key=\$my_wait_key_save<enter>"
+<enter-command> set wait_key=\$my_wait_key_save<enter>" \
+"reply to a message"
 
 macro index,pager g "\
 <enter-command> set my_wait_key_save=\$wait_key<enter>\
@@ -15,7 +16,8 @@ macro index,pager g "\
 <pipe-message>ottolangy<enter>\
 <enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
 <group-reply>\
-<enter-command> set wait_key=\$my_wait_key_save<enter>"
+<enter-command> set wait_key=\$my_wait_key_save<enter>" \
+"reply to all recipients"
 
 macro pager L "\
 <enter-command> set my_wait_key_save=\$wait_key<enter>\
@@ -23,4 +25,5 @@ macro pager L "\
 <pipe-message>ottolangy<enter>\
 <enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
 <list-reply>\
-<enter-command> set wait_key=\$my_wait_key_save<enter>"
+<enter-command> set wait_key=\$my_wait_key_save<enter>" \
+"reply to specified mailing list"
