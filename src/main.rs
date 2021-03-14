@@ -15,7 +15,7 @@
 
 use exitcode;
 use mailparse;
-use thiserror;
+use thiserror::Error;
 use whatlang::{self, Lang};
 use xdg;
 
@@ -40,7 +40,7 @@ const ATTRIBUTION_EN: &'static str =
 "#;
 
 
-#[derive(thiserror::Error, Debug)]
+#[derive(Error, Debug)]
 enum WrapError {
     #[error("unable to parse email body: {0}")]
     ParseMail(#[from] mailparse::MailParseError),
@@ -55,7 +55,7 @@ enum WrapError {
     Io(#[from] std::io::Error),
 }
 
-#[derive(thiserror::Error, Debug)]
+#[derive(Error, Debug)]
 enum OttolangyError {
     #[error("failed to read from stdin: {0}")]
     ReadStdin(#[from] std::io::Error),
