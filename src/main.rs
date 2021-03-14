@@ -15,6 +15,7 @@
 
 use anyhow::{anyhow, Context, Error};
 use mailparse;
+use thiserror;
 use whatlang::{self, Lang};
 use xdg;
 
@@ -38,6 +39,23 @@ const ATTRIBUTION_EN: &'static str =
 "#;
 
 
+#[derive(thiserror::Error, Debug)]
+enum OttolangyError {
+    #[error("unable to parse email body: {0}")]
+    ParseMail(#[from] mailparse::MailParseError),
+
+    #[error("unable to parse email body")]
+    ParseMailUnknown,
+
+    #[error(transparent)]
+    Xdg(#[from] xdg::BaseDirectoriesError),
+
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+}
+
+
+// TODO: exit codes
 fn main() {
     match run() {
         Ok(_) => (),
@@ -76,7 +94,7 @@ fn run() -> Result<(), Error> {
 ///
 /// Given an email as input, parses it and extracts the body. For multipart
 /// emails, the body is extracted from the text part.
-fn get_email_body(email: &[u8]) -> Result<String, Error> {
+fn get_email_body(email: &[u8]) -> Result<String, OttolangyError> {
     let email = mailparse::parse_mail(&email)?;
 
     if email.subparts.is_empty() {
@@ -95,13 +113,13 @@ fn get_email_body(email: &[u8]) -> Result<String, Error> {
         }
     }
 
-    Err(anyhow!("unable to parse email body"))
+    Err(OttolangyError::ParseMailUnknown)
 }
 
 /// Write the attribution config to a file.
 ///
 /// Store the file in the XDG data directory.
-fn write_attribution(config: &str) -> Result<(), Error> {
+fn write_attribution(config: &str) -> Result<(), OttolangyError> {
     let xdg_dirs = xdg::BaseDirectories::with_prefix(PROGRAM_NAME)?;
 
     let muttrc_path = xdg_dirs.place_data_file(MUTTRC_FILENAME)?;
