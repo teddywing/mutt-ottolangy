@@ -1,14 +1,26 @@
 # TODO: description
 # TODO: license unlicense
 
-macro index,pager r "<pipe-message>ottolangy<enter>\
+macro index,pager r "\
+<enter-command> set my_wait_key_save=\$wait_key<enter>\
+<enter-command> unset wait_key<enter>\
+<pipe-message>ottolangy<enter>\
 <enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
-<reply>"
+<reply>\
+<enter-command> set wait_key=\$my_wait_key_save<enter>"
 
-macro index,pager g "<pipe-message>ottolangy<enter>\
+macro index,pager g "\
+<enter-command> set my_wait_key_save=\$wait_key<enter>\
+<enter-command> unset wait_key<enter>\
+<pipe-message>ottolangy<enter>\
 <enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
-<group-reply>"
+<group-reply>\
+<enter-command> set wait_key=\$my_wait_key_save<enter>"
 
-macro index,pager L "<pipe-message>ottolangy<enter>\
+macro index,pager L "\
+<enter-command> set my_wait_key_save=\$wait_key<enter>\
+<enter-command> unset wait_key<enter>\
+<pipe-message>ottolangy<enter>\
 <enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
-<list-reply>"
+<list-reply>\
+<enter-command> set wait_key=\$my_wait_key_save<enter>"
