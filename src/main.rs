@@ -155,27 +155,18 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
 
         println!("part ctype: {:?}", part.ctype);
 
-        for header in part.get_headers() {
-            if header.get_key() == "Content-Type"
-                && header.get_value().starts_with("multipart/alternative")
-            {
-                for alternative_part in &part.subparts {
-                    println!("apart ctype: {:?}", alternative_part.ctype);
-                    for alternative_header in alternative_part.get_headers() {
-                        if alternative_header.get_key() == "Content-Type"
-                            && alternative_header.get_value().starts_with("text/plain")
-                        {
-                            return Ok(alternative_part.get_body()?);
-                        }
-                    }
+        if part.ctype.mimetype == "multipart/alternative" {
+            for alternative_part in &part.subparts {
+                println!("apart ctype: {:?}", alternative_part.ctype);
+
+                if alternative_part.ctype.mimetype == "text/plain" {
+                    return Ok(alternative_part.get_body()?);
                 }
             }
+        }
 
-            if header.get_key() == "Content-Type"
-                && header.get_value().starts_with("text/plain")
-            {
-                return Ok(part.get_body()?);
-            }
+        if part.ctype.mimetype == "text/plain" {
+            return Ok(part.get_body()?);
         }
     }
 
