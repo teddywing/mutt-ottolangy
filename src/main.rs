@@ -137,6 +137,20 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     for part in email.subparts {
         for header in part.get_headers() {
             if header.get_key() == "Content-Type"
+                && header.get_value().starts_with("multipart/alternative")
+            {
+                for alternative_part in &part.subparts {
+                    for alternative_header in alternative_part.get_headers() {
+                        if alternative_header.get_key() == "Content-Type"
+                            && alternative_header.get_value().starts_with("text/plain")
+                        {
+                            return Ok(alternative_part.get_body()?);
+                        }
+                    }
+                }
+            }
+
+            if header.get_key() == "Content-Type"
                 && header.get_value().starts_with("text/plain")
             {
                 return Ok(part.get_body()?);
