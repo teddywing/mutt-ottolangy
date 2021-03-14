@@ -15,6 +15,7 @@
 
 use exitcode;
 use mailparse;
+use regex::Regex;
 use thiserror::Error;
 use whatlang::{self, Lang};
 use xdg;
@@ -109,6 +110,7 @@ fn run() -> Result<(), OttolangyError> {
     let lang_info = whatlang::detect(&body)
         .ok_or(OttolangyError::DetectLanguage)?;
 
+    println!("lang: {:?}", lang_info);
     let attribution_config = if lang_info.lang() == Lang::Fra {
         ATTRIBUTION_FR
     } else {
@@ -131,7 +133,14 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     println!("ctype: {:?}", email.ctype);
 
     if email.subparts.is_empty() {
-        let body = email.get_body()?;
+        let mut body = email.get_body()?;
+
+        if email.ctype.mimetype == "text/html" {
+            let re = Regex::new("<[^>]*>").unwrap();
+            body = re.replace_all(&body, "").into_owned();
+        }
+
+        println!("body: {:?}", body);
 
         return Ok(body);
     }
