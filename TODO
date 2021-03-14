@@ -1,7 +1,7 @@
 TODO
 
 2021.03.14:
-- wait_key in muttrc
+v wait_key in muttrc
 - Doesn't parse emails with attachments
 - Emails with HTML parts without plain text parts
 - README
