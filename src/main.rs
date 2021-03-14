@@ -115,7 +115,6 @@ fn run() -> Result<(), OttolangyError> {
     let lang_info = whatlang::detect(&body)
         .ok_or(OttolangyError::DetectLanguage)?;
 
-    println!("lang: {:?}", lang_info);
     let attribution_config = if lang_info.lang() == Lang::Fra {
         ATTRIBUTION_FR
     } else {
@@ -135,8 +134,6 @@ fn run() -> Result<(), OttolangyError> {
 fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     let email = mailparse::parse_mail(&email)?;
 
-    println!("ctype: {:?}", email.ctype);
-
     if email.subparts.is_empty() {
         let mut body = email.get_body()?;
 
@@ -144,14 +141,8 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
             body = unhtml(&body)?;
         }
 
-        println!("body: {:?}", body);
-
         return Ok(body);
     }
-
-    // TODO: If no plain text part, use html one
-    // TODO: New predicate function for text/plain
-    // TODO: Maybe split into functions
 
     extract_multipart_email_body(&email)
 }
