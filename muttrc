@@ -1,0 +1,14 @@
+# TODO: description
+# TODO: license unlicense
+
+macro index,pager r "<pipe-message>ottolangy<enter>\
+<enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
+<reply>"
+
+macro index,pager g "<pipe-message>ottolangy<enter>\
+<enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
+<group-reply>"
+
+macro index,pager L "<pipe-message>ottolangy<enter>\
+<enter-command> source $HOME/.local/share/ottolangy/attribution.muttrc<enter>\
+<list-reply>"
