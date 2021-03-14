@@ -3,5 +3,5 @@ TODO
 2021.03.13:
 v wait_key in muttrc
 v Doesn't parse emails with attachments
-- Emails with HTML parts without plain text parts
+v Emails with HTML parts without plain text parts (2021.03.14)
 - README
