@@ -128,6 +128,8 @@ fn run() -> Result<(), OttolangyError> {
 fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     let email = mailparse::parse_mail(&email)?;
 
+    println!("ctype: {:?}", email.ctype);
+
     if email.subparts.is_empty() {
         let body = email.get_body()?;
 
@@ -138,11 +140,18 @@ fn get_email_body(email: &[u8]) -> Result<String, WrapError> {
     // TODO: New predicate function for text/plain
     // TODO: Maybe split into functions
     for part in email.subparts {
+        // if part.headers.get_app_values() is one of:
+        // "multipart/alternative"
+        // "text/plain"
+
+        println!("part ctype: {:?}", part.ctype);
+
         for header in part.get_headers() {
             if header.get_key() == "Content-Type"
                 && header.get_value().starts_with("multipart/alternative")
             {
                 for alternative_part in &part.subparts {
+                    println!("apart ctype: {:?}", alternative_part.ctype);
                     for alternative_header in alternative_part.get_headers() {
                         if alternative_header.get_key() == "Content-Type"
                             && alternative_header.get_value().starts_with("text/plain")
