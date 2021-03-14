@@ -78,20 +78,17 @@ fn main() {
             eprintln!("{}: error: {}", PROGRAM_NAME, e);
 
             match e {
-                OttolangyError::Wrapped(WrapError::ParseMail(_)) =>
+                OttolangyError::Wrapped(WrapError::ParseMail(_))
+                | OttolangyError::Wrapped(WrapError::ParseMailUnknown) =>
                     process::exit(exitcode::DATAERR),
-                OttolangyError::Wrapped(WrapError::ParseMailUnknown) =>
-                    process::exit(exitcode::DATAERR),
-                OttolangyError::Wrapped(WrapError::Xdg(_)) =>
-                    process::exit(exitcode::IOERR),
-                OttolangyError::Wrapped(WrapError::Io(_)) =>
+                OttolangyError::Wrapped(WrapError::Xdg(_))
+                | OttolangyError::Wrapped(WrapError::Io(_))
+                | OttolangyError::WriteConfig(_) =>
                     process::exit(exitcode::IOERR),
                 OttolangyError::ReadStdin(_) =>
                     process::exit(exitcode::NOINPUT),
                 OttolangyError::DetectLanguage =>
                     process::exit(exitcode::SOFTWARE),
-                OttolangyError::WriteConfig(_) =>
-                    process::exit(exitcode::IOERR),
             }
         },
     }
