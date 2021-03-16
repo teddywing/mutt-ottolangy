@@ -7,4 +7,4 @@ v Emails with HTML parts without plain text parts (2021.03.14)
 - README
 
 2021.03.16:
-- Change locale also: month name should not be capitalised in French
+v Change locale also: month name should not be capitalised in French
