@@ -33,11 +33,13 @@ const MUTTRC_FILENAME: &'static str = "attribution.muttrc";
 /// French attribution config.
 const ATTRIBUTION_FR: &'static str =
     r#"set attribution = "Le %{%e %b. %Y à %H:%M %Z}, %f a écrit:"
+set attribution_locale = "fr_FR.UTF-8"
 "#;
 
 /// English attribution config.
 const ATTRIBUTION_EN: &'static str =
     r#"set attribution = "On %{%b %e, %Y, at %I:%M %p %Z}, %f wrote:"
+set attribution_locale = "en_US.UTF-8"
 "#;
 
 
