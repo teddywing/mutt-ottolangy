@@ -24,6 +24,7 @@ use Bin qw($BIN);
 
 my $attribution_muttrc_path = "$ENV{'HOME'}/.local/share/ottolangy/attribution.muttrc";
 my $attribution_config = q(set attribution = "Le %{%e %b. %Y à %H:%M %Z}, %f a écrit:"
+set attribution_locale = "fr_FR.UTF-8"
 );
 
 # Remove any existing Ottolangy muttrc file.
@@ -32,12 +33,11 @@ unlink $attribution_muttrc_path;
 system("$BIN < ./t/data/french.eml");
 ok !$?;
 
-my $generated_config;
-{
-	local $\;
+my $generated_config = do {
+	local $/ = undef;
 	open my $fh, '<', $attribution_muttrc_path or die $!;
-	$generated_config = <$fh>;
-}
+	<$fh>;
+};
 is $generated_config, $attribution_config;
 
 
