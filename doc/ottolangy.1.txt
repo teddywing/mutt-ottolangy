@@ -14,6 +14,11 @@ DESCRIPTION
 Reads an email from standard input and writes a muttrc file setting the
 *$attribution* format string based on the lanugage of the input email.
 
+OPTIONS
+-------
+-V, --version::
+	Print the program version.
+
 CAVEATS
 -------
 Attribution format strings are currently hard-coded. Only English and French
