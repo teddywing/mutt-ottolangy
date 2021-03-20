@@ -3,17 +3,32 @@ mutt-ottolangy
 
 Set Mutt’s attribution format string based on the language of the message you’re
 replying to.
-TODO
+
+If the input message is in English, the attribution will look like:
+
+	On Mar 19, 2021, at 01:55 PM +0000, Philip J. Fry <philip.j.fry@example.com> wrote:
+
+In French, it appears as:
+
+	Le 19 mar. 2021 à 13:55 +0000, Philippe J. Fry <philippe.j.fry@example.com> a écrit:
 
 
 ## Install
-TODO: binary
+On Mac OS X, Ottolangy can be installed with Homebrew:
+
+	$ brew install teddywing/formulae/ottolangy
+
+To compile from source or install on other platforms:
+
+	$ cargo install --git https://github.com/teddywing/ottolangy.git
 
 Copy the contents of the included [muttrc] file or source it. The included
 macros override Mutt’s reply commands.
 
-TODO
-Mutt config (Add those in a new .muttrc file)
+
+## Uninstall
+
+	$ cargo uninstall ottolangy
 
 
 ## Caveats
