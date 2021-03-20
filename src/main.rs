@@ -20,6 +20,7 @@ use thiserror::Error;
 use whatlang::{self, Lang};
 use xdg;
 
+use std::env;
 use std::fs::File;
 use std::io::{self, Read, Write};
 use std::process;
@@ -78,6 +79,16 @@ enum OttolangyError {
 
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() == 2
+        && (args[1] == "-V" || args[1] == "--version")
+    {
+        println!("{}", env!("CARGO_PKG_VERSION"));
+
+        process::exit(exitcode::OK)
+    }
+
     match run() {
         Ok(_) => (),
         Err(e) => {
