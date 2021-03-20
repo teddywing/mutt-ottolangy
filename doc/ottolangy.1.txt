@@ -1,0 +1,30 @@
+ottolangy(1)
+============
+
+NAME
+----
+ottolangy - Set Mutt's attribution format based on the input language
+
+SYNOPSIS
+--------
+ottolangy
+
+DESCRIPTION
+-----------
+Reads an email from standard input and writes a muttrc file setting the
+*$attribution* format string based on the lanugage of the input email.
+
+CAVEATS
+-------
+Attribution format strings are currently hard-coded. Only English and French
+are supported. If the language isn’t recognised as French, attribution
+defaults to English.
+
+FILES
+-----
+'/etc/ottolangy/muttrc'::
+	Override Mutt's reply bindings, wrapping them in a call to Ottolangy.
+
+'~/.local/share/ottolangy/attribution.muttrc'::
+	This file is generated on each run and sourced by Ottolangy's muttrc to
+	set the appropriate attribution.

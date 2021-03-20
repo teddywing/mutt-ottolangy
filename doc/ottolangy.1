@@ -1,0 +1,51 @@
+'\" t
+.\"     Title: ottolangy
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 03/20/2021
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "OTTOLANGY" "1" "03/20/2021" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+ottolangy \- Set Mutt\*(Aqs attribution format based on the input language
+.SH "SYNOPSIS"
+.sp
+ottolangy
+.SH "DESCRIPTION"
+.sp
+Reads an email from standard input and writes a muttrc file setting the \fB$attribution\fR format string based on the lanugage of the input email\&.
+.SH "CAVEATS"
+.sp
+Attribution format strings are currently hard\-coded\&. Only English and French are supported\&. If the language isn\(cqt recognised as French, attribution defaults to English\&.
+.SH "FILES"
+.PP
+\fI/etc/ottolangy/muttrc\fR
+.RS 4
+Override Mutt\(cqs reply bindings, wrapping them in a call to Ottolangy\&.
+.RE
+.PP
+\fI~/\&.local/share/ottolangy/attribution\&.muttrc\fR
+.RS 4
+This file is generated on each run and sourced by Ottolangy\(cqs muttrc to set the appropriate attribution\&.
+.RE

@@ -18,6 +18,8 @@ SOURCES := $(shell find src -name '*.rs')
 
 DEBUG_PRODUCT := target/debug/ottolangy
 
+MAN_PAGE := doc/ottolangy.1
+
 
 $(DEBUG_PRODUCT): $(SOURCES)
 	cargo build
@@ -25,3 +27,10 @@ $(DEBUG_PRODUCT): $(SOURCES)
 .PHONY: test
 test: $(DEBUG_PRODUCT)
 	prove -v -I./t
+
+
+.PHONY: doc
+doc: $(MAN_PAGE)
+
+$(MAN_PAGE): doc/ottolangy.1.txt
+	a2x --no-xmllint --format manpage $<
