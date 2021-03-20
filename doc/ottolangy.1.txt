@@ -22,7 +22,7 @@ defaults to English.
 
 FILES
 -----
-'/etc/ottolangy/muttrc'::
+'$PREFIX/etc/ottolangy/muttrc'::
 	Override Mutt's reply bindings, wrapping them in a call to Ottolangy.
 
 '~/.local/share/ottolangy/attribution.muttrc'::

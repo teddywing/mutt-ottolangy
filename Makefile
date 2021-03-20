@@ -33,4 +33,6 @@ test: $(DEBUG_PRODUCT)
 doc: $(MAN_PAGE)
 
 $(MAN_PAGE): doc/ottolangy.1.txt
-	a2x --no-xmllint --format manpage $<
+	sed "s/\$$PREFIX/$$PREFIX/g" $< > "$<.tmp"
+	a2x --no-xmllint --format manpage "$<.tmp"
+	rm "$<.tmp"
