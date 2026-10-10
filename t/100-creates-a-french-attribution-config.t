@@ -23,7 +23,7 @@ use Test::More;
 use Bin qw($BIN);
 
 my $attribution_muttrc_path = "$ENV{'HOME'}/.local/share/ottolangy/attribution.muttrc";
-my $attribution_config = q(set attribution = "Le %{%e %b. %Y à %H:%M %Z}, %f a écrit:"
+my $attribution_config = q(set attribution = "Le %{%e %b %Y à %H:%M %Z}, %f a écrit:"
 set attribution_locale = "fr_FR.UTF-8"
 );
 
