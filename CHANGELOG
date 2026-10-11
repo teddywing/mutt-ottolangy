@@ -1,0 +1,15 @@
+CHANGELOG
+=========
+
+v0.0.2 (2026-10-11):
+	Changes:
+
+	* Remove the period after the month abbreviation in the French attribution
+	  line.
+	* Fix the colon punctuation in the French attribution line.
+	* Relicense "muttrc" configuration file from Unlicense to 0BSD.
+
+v0.0.1 (2021-03-20):
+	First public release.
+
+ vim:tw=80:comments=:fo+=n:formatlistpat=^\\s*\\*\\s*
