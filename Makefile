@@ -15,7 +15,6 @@
 
 
 VERSION := $(shell egrep '^version = ' Cargo.toml | awk -F '"' '{ print $$2 }')
-TOOLCHAIN := $(shell fgrep default_host_triple $(HOME)/.rustup/settings.toml | awk -F '"' '{ print $$2 }')
 SOURCES := $(shell find src -name '*.rs')
 
 DEBUG_PRODUCT := target/debug/ottolangy
@@ -23,8 +22,7 @@ RELEASE_PRODUCT := target/release/ottolangy
 
 MAN_PAGE := doc/ottolangy.1
 
-DIST := $(abspath dist)
-DIST_PRODUCT := $(DIST)/bin/ottolangy
+DIST := dist
 DIST_MUTTRC := $(DIST)/etc/ottolangy/muttrc
 DIST_MAN_PAGE := $(DIST)/share/man/man1/ottolangy.1
 
@@ -51,32 +49,22 @@ $(MAN_PAGE): doc/ottolangy.1.txt
 
 
 .PHONY: dist
-dist: $(DIST_PRODUCT) $(DIST_MUTTRC) $(DIST_MAN_PAGE)
+dist: $(SOURCES) muttrc $(MAN_PAGE)
+	mkdir -p $(DIST)
 
-$(DIST):
-	mkdir -p $@
+	mkdir -p $(DIST)/etc/ottolangy
+	cp muttrc $(DIST_MUTTRC)
 
-$(DIST)/bin: | $(DIST)
-	mkdir -p $@
+	mkdir -p $(DIST)/share/man/man1
+	cp $(MAN_PAGE) $(DIST_MAN_PAGE)
 
-$(DIST)/etc/ottolangy: | $(DIST)
-	mkdir -p $@
-
-$(DIST)/share/man/man1: | $(DIST)
-	mkdir -p $@
-
-$(DIST_PRODUCT): $(RELEASE_PRODUCT) | $(DIST)/bin
-	cp $< $@
-
-$(DIST_MUTTRC): muttrc | $(DIST)/etc/ottolangy
-	cp $< $@
-
-$(DIST_MAN_PAGE): $(MAN_PAGE) | $(DIST)/share/man/man1
-	cp $< $@
+	cp -R src $(DIST)
+	cp Cargo.toml Cargo.lock $(DIST)
+	cp Makefile $(DIST)
 
 
 .PHONY: pkg
-pkg: ottolangy_$(VERSION)_$(TOOLCHAIN).tar.bz2
+pkg: ottolangy_$(VERSION).tar.bz2
 
-ottolangy_$(VERSION)_$(TOOLCHAIN).tar.bz2: dist
-	tar cjv -s /dist/ottolangy_$(VERSION)_$(TOOLCHAIN)/ -f $@ dist
+ottolangy_$(VERSION).tar.bz2: dist
+	tar cjv -s /dist/ottolangy_$(VERSION)/ -f $@ dist
